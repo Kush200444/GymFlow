@@ -5,7 +5,7 @@ const gymSchema = new mongoose.Schema({
         type:String,
         required:true,
         minLength:[5,`Too short Name`],
-        maxLenght:20
+        maxLength:20
     },
     EmailId:{
         type:String,
