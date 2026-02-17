@@ -36,6 +36,7 @@ const userSchema = new mongoose.Schema({
         }
     },
     role:{
+        type:String,
         enum:{
             value:["owner","client","trainer"],
             message:`{VALUE} is the incorrect role`,
