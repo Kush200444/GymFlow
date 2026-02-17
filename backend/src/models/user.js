@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const Gym = require("./gym");
 const userSchema = new mongoose.Schema({
     firstName:{
         type:String,
@@ -9,20 +10,22 @@ const userSchema = new mongoose.Schema({
     },
     lastName:{
         type:String,
-        minLength:20,
+        minLength:1,
         maxLength:100
     },
-    EmailId:{
+    email:{
         type:String,
         required:true,
         lowercase:true,
+        index:true,
+        unique:true,
         validate(value){
             if(!validator.isEmail(value)){
                 throw new Error("Email not valid");
             }
         }
     },
-    Password:{
+    password:{
         type:String,
         required:true,
         trim:true,
@@ -32,7 +35,7 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
-    Role:{
+    role:{
         enum:{
             value:["owner","client","trainer"],
             message:`{VALUE} is the incorrect role`,
@@ -41,14 +44,13 @@ const userSchema = new mongoose.Schema({
         required:true,
         lowercase:true,
     },
-    GymId:{
+    gymId:{
         type:mongoose.Schema.Types.ObjectId,
         required:true,
-        index:true,
-        unique:true,
         ref:"Gym"
     }
          
 },{
     timestamps:true,
-})
+});
+module.exports = mongoose.model("User",userSchema);
