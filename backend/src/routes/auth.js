@@ -1,21 +1,22 @@
 const express = require("express");
+const authRouter = express.Router();
 const app = express();
 const {validateSignUpData} = require("../utils/validate");
 const User = require("../models/user");
-const authRouter = express.Router();
-app.use(express.json())
+app.use(express.json());
 
 
 
 authRouter.post("/signup", async (req,res) => {
       try{
         validateSignUpData(req);
-       const {firstName,lastName,email,password} = req.body;
+       const {firstName,lastName,email,password,role} = req.body;
        const user = new User({
          firstName,
          lastName,
          email,
-         password
+         password,
+         role
        });
        
        await user.save();

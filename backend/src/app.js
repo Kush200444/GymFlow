@@ -6,14 +6,14 @@ app.use(express.json());
 
 
 
-// const authRouter = require("./routes/auth");
+const authRouter = require("./routes/auth");
 
-// app.use("/",authRouter);
+app.use("/",authRouter);
 
 
 connectDB().then(()=>{
     console.log("Database connected Successfully");
-    app.listen(3333,()=>{
+    app.listen(7777,()=>{
         console.log("Server running Successfully ");
     })}).catch((err)=>{
         console.error(err.message);

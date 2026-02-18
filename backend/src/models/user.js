@@ -35,21 +35,14 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
-    role:{
-        type:String,
-        required:true,
-        lowercase:true,
-        enum:{
-            value:["owner","client","trainer"],
-            message:`{VALUE} is the incorrect role`,
-
-        },
-        
-        
+    role: {
+        type: String,
+        required: true,
+        lowercase: true,
+        enum: ["owner", "client", "trainer"],
     },
     gymId:{
         type:mongoose.Schema.Types.ObjectId,
-    
         ref:"Gym"
     }
          
