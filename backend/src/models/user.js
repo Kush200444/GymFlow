@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const Gym = require("./gym");
+const jwt =  require("jsonwebtoken");
 const userSchema = new mongoose.Schema({
     firstName:{
         type:String,
@@ -50,6 +51,12 @@ const userSchema = new mongoose.Schema({
 },{
     timestamps:true,
 });
+
+userSchema.methods.getJWT = async function(){
+ const user = this;
+ const token = await jwt.sign({_id:user._id},"Kush@12345",{expiresIn:"1d"});
+ return token;
+}
 userSchema.pre("save", async function() {
    if (!this.isModified("password")) return ;
    this.password = await bcrypt.hash(this.password, 10);
