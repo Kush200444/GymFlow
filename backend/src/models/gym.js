@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const gymSchema = new mongoose.Schema({
-    Name:{
+    gymName:{
         type:String,
         required:true,
         minLength:[5,`Too short Name`],
         maxLength:20
     },
-    EmailId:{
+    gymEmail:{
         type:String,
         required:true,
         index:true,
@@ -19,7 +19,7 @@ const gymSchema = new mongoose.Schema({
          }
         }
     },
-    Password:{
+    gymPassword:{
       type:String,
       required:true,
       trim:true,
@@ -28,9 +28,8 @@ const gymSchema = new mongoose.Schema({
             throw new Error("Invalid Password")
         }
       }
-
     },
-    PhoneNumber:{
+    gymPhoneNumber:{
         type:String,
         required:true,
         validate(value){
@@ -39,7 +38,7 @@ const gymSchema = new mongoose.Schema({
             }
         }
     },
-    Address:{
+    address:{
         type:String,
         required:true,
         minLength:[12,'Not enough characters'],
