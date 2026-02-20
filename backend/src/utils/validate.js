@@ -20,4 +20,16 @@ const validateLoginData = function(req){
         throw new Error("Must be Strong password")
     }   
 }
-module.exports = {validateSignUpData,validateLoginData};
+const validateGymData = function(req){
+    const{gymName,gymEmail,gymPhoneNumber,gymAddress}=req.body;
+    if(!gymName){
+        throw new Error("Enter the gym Name");
+    }
+    if(!validator.isEmail(gymEmail)){
+        throw new Error("Invalid E-mail")
+    }
+    if(!validator.isMobilePhone(gymPhoneNumber)){
+        throw new Error("Invalid Phone Number");
+    }   
+}
+module.exports = {validateSignUpData,validateLoginData,validateGymData};

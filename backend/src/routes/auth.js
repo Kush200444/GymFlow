@@ -1,7 +1,9 @@
 const express = require("express");
 const authRouter = express.Router();
 const jwt =  require("jsonwebtoken");
-const {validateSignUpData,validateLoginData} = require("../utils/validate");
+// debug: log validation utilities
+const validationUtils = require("../utils/validate");
+const {validateSignUpData,validateLoginData,validateGymData} = validationUtils;
 const User = require("../models/user");
 const Gym = require("../models/gym");
 const bcrypt =  require("bcrypt");
@@ -10,19 +12,27 @@ const { userAuth } = require("../middlewares/userAuth");
 
 authRouter.post("/auth/signup-owner", async (req,res) => {
       try{
-        const {firstName,lastName,email,password} = req.body;
-        validateSignUpData(req);
+       const {gymName,gymEmail,gymPhoneNumber,gymAddress,firstName,lastName,email,password} =req.body;
+       validateGymData(req);
+       const gym = new Gym({
+         gymName,
+         gymEmail,
+         gymPhoneNumber,
+         gymAddress
+       });
+       validateSignUpData(req);
        const user = new User({
          firstName,
          lastName,
          email,
          password,
          role:"owner",
-
-         
+         gymId:gym._id
        }); 
        await user.save();
-       res.json({message : "user added successfully"}); 
+       gym.ownerId = user._id;
+       await gym.save();
+       res.json({message : "user and gym added successfully",gym,user}); 
       }catch(err){
         res.status(500).json("ERROR :" + err.message)
       }
