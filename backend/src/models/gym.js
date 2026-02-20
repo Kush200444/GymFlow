@@ -16,18 +16,8 @@ const gymSchema = new mongoose.Schema({
         validate(value){
          if(!validator.isEmail(value)){
             throw new Error("Invalid E-mail Id");
-         }
+           }
         }
-    },
-    gymPassword:{
-      type:String,
-      required:true,
-      trim:true,
-      validate(value){
-        if(!validator.isStrongPassword){
-            throw new Error("Invalid Password")
-        }
-      }
     },
     gymPhoneNumber:{
         type:String,
@@ -38,12 +28,20 @@ const gymSchema = new mongoose.Schema({
             }
         }
     },
-    address:{
+    gymAddress:{
         type:String,
         required:true,
         minLength:[12,'Not enough characters'],
         maxLength:100,
-    }
+    },
+    ownerId:{ 
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    },
+    isActive:{
+        type:Boolean,
+        default:true
+    } 
 },{
     timestamps:true
 });

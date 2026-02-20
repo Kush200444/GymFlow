@@ -3,21 +3,23 @@ const authRouter = express.Router();
 const jwt =  require("jsonwebtoken");
 const {validateSignUpData,validateLoginData} = require("../utils/validate");
 const User = require("../models/user");
+const Gym = require("../models/gym");
 const bcrypt =  require("bcrypt");
 const { userAuth } = require("../middlewares/userAuth");
-const passwordHash = require("../models/user").passwordHash;
 
 
-authRouter.post("/signup", async (req,res) => {
+authRouter.post("/auth/signup-owner", async (req,res) => {
       try{
-        const {firstName,lastName,email,password,role} = req.body;
+        const {firstName,lastName,email,password} = req.body;
         validateSignUpData(req);
        const user = new User({
          firstName,
          lastName,
          email,
          password,
-         role
+         role:"owner",
+
+         
        }); 
        await user.save();
        res.json({message : "user added successfully"}); 
@@ -25,7 +27,7 @@ authRouter.post("/signup", async (req,res) => {
         res.status(500).json("ERROR :" + err.message)
       }
 });
-authRouter.post("/login", async (req,res) =>{
+authRouter.post("/auth/login", async (req,res) =>{
       try{
        validateLoginData(req); 
        const {email,password} = req.body;
@@ -47,4 +49,5 @@ authRouter.post("/login", async (req,res) =>{
         res.status(404).json("ERROR :" + err.message);
       }
 });
+
 module.exports = authRouter;
