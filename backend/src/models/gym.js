@@ -3,15 +3,16 @@ const validator = require("validator");
 const gymSchema = new mongoose.Schema({
     gymName:{
         type:String,
-        required:true,
         minLength:[5,`Too short Name`],
-        maxLength:20
+        maxLength:100,
+        required:true
     },
     gymEmail:{
         type:String,
         required:true,
         index:true,
         unique:true,
+        sparse:true,
         lowercase:true,
         validate(value){
          if(!validator.isEmail(value)){

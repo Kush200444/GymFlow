@@ -12,7 +12,7 @@ const { userAuth } = require("../middlewares/userAuth");
 
 authRouter.post("/auth/signup-owner", async (req,res) => {
       try{
-       const {gymName,gymEmail,gymPhoneNumber,gymAddress,firstName,lastName,email,password} =req.body;
+       const {gymName,gymEmail,gymPhoneNumber,gymAddress,firstName,lastName,email,password,isActive} =req.body;
        validateGymData(req);
        const gym = new Gym({
          gymName,
@@ -20,6 +20,7 @@ authRouter.post("/auth/signup-owner", async (req,res) => {
          gymPhoneNumber,
          gymAddress
        });
+       await gym.save();
        validateSignUpData(req);
        const user = await User.create({
          firstName,
@@ -27,13 +28,18 @@ authRouter.post("/auth/signup-owner", async (req,res) => {
          email,
          password,
          role:"owner",
-         gymId:gym._id
+         gymId:gym._id,
+         isActive
        }); 
        gym.ownerId = user._id;
        await gym.save();
-       res.json({message : "user and gym added successfully",gym,user}); 
+       res.status(201).json({message : "Signup Successfull"}); 
       }catch(err){
-        res.status(500).json("ERROR :" + err.message)
+        // if(gym){
+        //     await Gym.findByIdAndDelete(gym._id);
+            res.status(500).json("ERROR :" + err.message)
+        // }
+        
       }
 });
 authRouter.post("/auth/login", async (req,res) =>{
@@ -50,13 +56,26 @@ authRouter.post("/auth/login", async (req,res) =>{
        if(!isPasswordValid){
         throw new Error("Invalid Credentials")
        }
-        const token = await user.getJWT();
-        res.cookie("token",token); 
-        res.json({
-        message: "User logged successfully", user
-       })}catch(err){
+       const token = await user.getJWT;
+       res.cookie("token",token);
+       res.status(201).json({
+        message: "User logged In successfully"
+       });
+       }catch(err){
         res.status(404).json("ERROR :" + err.message);
       }
+});
+authRouter.post("/auth/logout", async (req,res) => {
+  try{
+    res.clearCookie("token");
+    res.status(201).json({
+        message: "Logged out successfully"
+    })
+  }catch(err){
+    res.status(404).json({
+        message: err.message
+    })
+  }
 });
 
 module.exports = authRouter;
