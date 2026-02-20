@@ -21,7 +21,7 @@ authRouter.post("/auth/signup-owner", async (req,res) => {
          gymAddress
        });
        validateSignUpData(req);
-       const user = new User({
+       const user = await User.create({
          firstName,
          lastName,
          email,
@@ -29,7 +29,6 @@ authRouter.post("/auth/signup-owner", async (req,res) => {
          role:"owner",
          gymId:gym._id
        }); 
-       await user.save();
        gym.ownerId = user._id;
        await gym.save();
        res.json({message : "user and gym added successfully",gym,user}); 

@@ -46,8 +46,11 @@ const userSchema = new mongoose.Schema({
     gymId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Gym"
-    }
-         
+    },
+    isActive:{
+        type:Boolean,
+        default:true
+    }     
 },{
     timestamps:true,
 });
