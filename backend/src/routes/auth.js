@@ -29,7 +29,6 @@ authRouter.post("/auth/signup-owner", async (req,res) => {
          password,
          role:"owner",
          gymId:gym._id,
-         isActive
        }); 
        gym.ownerId = user._id;
        await gym.save();
