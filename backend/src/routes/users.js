@@ -56,9 +56,14 @@ userRouter.get("/users/me",userAuth, async (req,res) => {
 });
 userRouter.get("/users/:userId",userAuth,authorizeRoles("owner"), async(req,res) => {
     try{
-     const userId=req.params._id;
+    const userId = req.params.userId;
      const owner = req.user;
-     const user = await User.findById(userId);
+     const user = await User.find({
+        $and:[{_id:req.params.userId},{gymId:owner.gymId}]
+     });
+     if(user.length===0){
+        throw new Error("Invalid Request");
+     }
      res.status(200).json({
         message:"User Data fetched Successfully",user
      });
