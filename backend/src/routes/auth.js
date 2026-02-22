@@ -57,11 +57,11 @@ authRouter.post("/auth/login", async (req,res) =>{
        }
        const token = await user.getJWT;
        res.cookie("token",token);
-       res.status(201).json({
+       res.status(200).json({
         message: "User logged In successfully"
        });
        }catch(err){
-        res.status(404).json("ERROR :" + err.message);
+        res.status(401).json("ERROR :" + err.message);
       }
 });
 authRouter.post("/auth/logout", async (req,res) => {
