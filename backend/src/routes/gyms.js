@@ -6,32 +6,33 @@ const Gym = require("../models/gym");
 const { validateGymEditData } = require("../utils/validate");
 
 
-gymRouter.get("/gyms", userAuth,authorizeRoles("owner"), async (req,res) => {
-    try{
-      const owner = req.user;  
-      const gym = await Gym.findOne({
-        ownerId:owner._id
-      });
-      res.status(200).json({
-        message:"Gym data fetch Successfully",gym
-      })        
-    }catch(err){
-        res.status(404).json("Error :" + err.message);
-    }
+// Support both /gym and /gyms for the owner to get their gym
+gymRouter.get("/gym", userAuth, authorizeRoles("owner"), async (req, res) => {
+  try {
+    const owner = req.user;
+    const gym = await Gym.findOne({ ownerId: owner._id });
+    if (!gym) return res.status(404).json({ message: "Gym not found" });
+    return res.status(200).json({ message: "Gym data fetched successfully", gym });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
 });
-gymRouter.patch("/gyms",userAuth,authorizeRoles("owner"),async (req,res) => {
-    try{
-         if(!validateGymEditData(req)){
-            throw new Error("Invalid Request")
-         }
-         const owner = req.user;
-         Object.keys(req.body).forEach((key)=>(owner[key] = req.body[key]));
-         await user.save();
-         res.json({message:`${owner.firstName}, your Gym was updated successfully`,data:owner});   
-   }catch(err){
-        res.status(404).json("Error :" + err.message);
-    }
-})
+
+gymRouter.patch("/gym", userAuth, authorizeRoles("owner"), async (req, res) => {
+  try {
+    // validate incoming update fields (will throw on invalid)
+    await validateGymEditData(req);
+    const owner = req.user;
+    const gym = await Gym.findOne({ ownerId: owner._id });
+    if (!gym) return res.status(404).json({ message: "Gym not found" });
+    // apply allowed updates to gym
+    Object.keys(req.body).forEach((key) => (gym[key] = req.body[key]));
+    await gym.save();
+    return res.json({ message: `Gym updated successfully`, data: gym });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+});
 
 
 module.exports = gymRouter;
