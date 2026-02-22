@@ -1,25 +1,28 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const userAuth = async (req,res,next) => {
- const {token} = req.cookies || {};
- console.log('userAuth cookies:', req.cookies);
+ const {token} = req.cookies;
  try{
  if(!token){
-    return res.status(401).json({message: "Token is not present"});
- }
- const decoded = jwt.verify(token,"Kush@12345");
- console.log('verified token payload:', decoded);
- const user = await User.findById(decoded._id);
- if(!user){
-    return res.status(401).json({message: "User not found"});
- }
- if(user.isActive === false){
-        return res.status(403).json({message: "Invalid Access"});
- }
- req.user = user;
- next();
+    throw new Error("Token is not valid");
+    }   
+    const decoded = await jwt.verify(token,"Kush@12345",{
+    expires: new Date(Date.now() + 8 * 3600000) // cookie will be removed after 8 hours
+    });
+    const user = await User.findById({_id:decoded._id});
+    if(!user){
+    throw new Error("User not found");
+    }
+    if(user.isActive==="false"){
+        throw new Error("Invalid Access");
+    } 
+    
+    req.user = user;
+    next();
  }catch(err){
-    return res.status(401).json({message: err.message});
+    res.json({
+        message: err.message
+    })
  }
 }
 
