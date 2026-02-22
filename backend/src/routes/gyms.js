@@ -3,10 +3,10 @@ const gymRouter = express.Router();
 const { authorizeRoles } = require("../middlewares/authorizeRoles");
 const {userAuth} = require("../middlewares/userAuth");
 const Gym = require("../models/gym");
-const { validateGymEditData } = require("../utils/validate");
+const {validateGymEditData} = require("../utils/validate");
 
 
-// Support both /gym and /gyms for the owner to get their gym
+
 gymRouter.get("/gym", userAuth, authorizeRoles("owner"), async (req, res) => {
   try {
     const owner = req.user;
@@ -20,12 +20,10 @@ gymRouter.get("/gym", userAuth, authorizeRoles("owner"), async (req, res) => {
 
 gymRouter.patch("/gym", userAuth, authorizeRoles("owner"), async (req, res) => {
   try {
-    // validate incoming update fields (will throw on invalid)
-    await validateGymEditData(req);
+    validateGymEditData(req);
     const owner = req.user;
     const gym = await Gym.findOne({ ownerId: owner._id });
     if (!gym) return res.status(404).json({ message: "Gym not found" });
-    // apply allowed updates to gym
     Object.keys(req.body).forEach((key) => (gym[key] = req.body[key]));
     await gym.save();
     return res.json({ message: `Gym updated successfully`, data: gym });

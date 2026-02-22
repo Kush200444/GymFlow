@@ -32,4 +32,16 @@ const validateGymData = function(req){
         throw new Error("Invalid Phone Number");
     }   
 }
-module.exports = {validateSignUpData,validateLoginData,validateGymData};
+
+const validateGymEditData = function(req){
+    const ALLOWED_UPDATES = [
+                             "gymName",
+                             "gymPhoneNumber",
+                             "gymAddress"]; 
+    const isUpdateAllowed = Object.keys(req.body).every((field)=>ALLOWED_UPDATES.includes(field));
+    if(!isUpdateAllowed){
+        throw new Error("Invalid Update Request");      
+    }
+}
+
+module.exports = {validateSignUpData,validateLoginData,validateGymData,validateGymEditData};
