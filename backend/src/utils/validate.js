@@ -44,4 +44,14 @@ const validateGymEditData = function(req){
     }
 }
 
-module.exports = {validateSignUpData,validateLoginData,validateGymData,validateGymEditData};
+const validateUserEditData = function(req){
+    const ALLOWED_UPDATES = ["firstName",
+                             "lastName"
+                            ];
+    const isUpdateAllowed = Object.keys(req.body).every((field) => ALLOWED_UPDATES.includes(field));
+    if(!isUpdateAllowed){
+        throw new Error("Invalid Update Request");
+    }
+}
+
+module.exports = {validateSignUpData,validateLoginData,validateGymData,validateGymEditData,validateUserEditData};

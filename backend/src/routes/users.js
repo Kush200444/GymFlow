@@ -76,25 +76,27 @@ userRouter.get("/users/:userId",userAuth,authorizeRoles("owner"), async(req,res)
     }
 });
 
-userRouter.patch("/users/:userId", userAuth,authorizeRoles("owner"), async (req,res) => {
+userRouter.patch("/users/:userId", userAuth, authorizeRoles("owner"), async (req,res) => {
     try{
-      validateUserEditData(req);  
+      validateUserEditData(req);
       const userId = req.params.userId;
       const owner = req.user;
-      const user = await User.find({
-        $and:[{_id:req.params.userId},{gymId:owner.gymId}]
+      // use findOne to get a single user document, not an array
+      const user = await User.findOne({
+        $and:[{_id: userId},{gymId: owner.gymId}]
       });
-      if(user.length===0){
-        throw new Error("User not found")
+      if (!user){
+        return res.status(404).json({message: "User not found"});
       }
-     Object.keys(req.body).forEach((key) => (user[key] = req.body[key]));      
-     await user.save();
-      res.status(200).json({
+      // apply allowed updates
+      Object.keys(req.body).forEach((key) => (user[key] = req.body[key]));
+      await user.save();
+      return res.status(200).json({
         message: "User edited Successfully",user
-      })
+      });
       
     }catch(err){
-     res.status(404).json("Error : " + err.message)        
+      return res.status(400).json({message: err.message});
     }
 });
 
