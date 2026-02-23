@@ -55,10 +55,10 @@ const userSchema = new mongoose.Schema({
     timestamps:true,
 });
 
-userSchema.methods.getJWT = async function(){
- const user = this;
- const token = await jwt.sign({_id:user._id},"Kush@12345",{expiresIn:"1d"});
- return token;
+userSchema.methods.getJWT =  async function(){
+  const user = this;
+  const token = await jwt.sign({_id:user._id}, 'Kush@12345');
+  return token;
 }
 userSchema.pre("save", async function() {
    if (!this.isModified("password")) return ;

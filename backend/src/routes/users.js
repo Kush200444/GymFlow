@@ -3,6 +3,8 @@ const userRouter = express.Router();
 const User = require("../models/user");
 const {userAuth} = require("../middlewares/userAuth");
 const {authorizeRoles} = require("../middlewares/authorizeRoles");
+const {validateUserEditData} = require("../utils/validate");
+
 
 
 userRouter.post("/users/trainers",userAuth,authorizeRoles("owner"),async (req,res) => {
@@ -55,6 +57,7 @@ userRouter.get("/users/me",userAuth, async (req,res) => {
 });
 userRouter.get("/users/:userId",userAuth,authorizeRoles("owner"), async(req,res) => {
     try{
+    
     const userId = req.params.userId;
      const owner = req.user;
      const user = await User.find({
@@ -72,6 +75,29 @@ userRouter.get("/users/:userId",userAuth,authorizeRoles("owner"), async(req,res)
       })
     }
 });
+
+userRouter.patch("/users/:userId", userAuth,authorizeRoles("owner"), async (req,res) => {
+    try{
+      validateUserEditData(req);  
+      const userId = req.params.userId;
+      const owner = req.user;
+      const user = await User.find({
+        $and:[{_id:req.params.userId},{gymId:owner.gymId}]
+      });
+      if(user.length===0){
+        throw new Error("User not found")
+      }
+     Object.keys(req.body).forEach((key) => (user[key] = req.body[key]));      
+     await user.save();
+      res.status(200).json({
+        message: "User edited Successfully",user
+      })
+      
+    }catch(err){
+     res.status(404).json("Error : " + err.message)        
+    }
+});
+
 userRouter.get("/users",userAuth,authorizeRoles("owner"), async (req,res) => {
     try{
      const {role,status} = req.query;
@@ -90,5 +116,6 @@ userRouter.get("/users",userAuth,authorizeRoles("owner"), async (req,res) => {
     }catch(err){
         res.status(404).json("Error : " + err.message)
     }
-})
+});
+
 module.exports = userRouter;
