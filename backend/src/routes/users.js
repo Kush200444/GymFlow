@@ -3,7 +3,6 @@ const userRouter = express.Router();
 const User = require("../models/user");
 const {userAuth} = require("../middlewares/userAuth");
 const {authorizeRoles} = require("../middlewares/authorizeRoles");
-const { updateSearchIndex } = require("../models/gym");
 
 
 userRouter.post("/users/trainers",userAuth,authorizeRoles("owner"),async (req,res) => {
@@ -73,29 +72,23 @@ userRouter.get("/users/:userId",userAuth,authorizeRoles("owner"), async(req,res)
       })
     }
 });
-userRouter.get("/users/active-trainers",userAuth,authorizeRoles("owner"),async(req,res) => {
-   try{
-     const activeTrainers = await User.find({
-        $and:[{role:activeTrainers.role},{isActive:true}]
-     })
-     res.status(200).json({
-        message:"Active Trainers data fetched Successfully",activeTrainers
-     })
-   }catch(err){
-     res.status(404).json("Error : " + err.message);
-   }
-});
-userRouter.get("/users/active-clients", async (req,res) => {
+userRouter.get("/users",userAuth,authorizeRoles("owner"), async (req,res) => {
     try{
-       const activeClients = await User.find({
-         $and:[{role:activeClients.role},{isActive:true}]
-       })
-       res.status(200).json({
-        message:"Active Clients data fetched Successfully",activeClients
-       })
+     const {role,status} = req.query;
+     const owner  = req.user;
+     const filter = {gymId:owner.gymId}
+     if(role){
+        filter.role = role;
+     }
+     if(status !== undefined){
+        filter.isActive = (status === "true")  // because query 
+     }
+     const users = await User.find(filter).select("-password");
+     res.status(200).json({
+        message:"Data fetched Successfully",users
+     })
     }catch(err){
-        res.status(404).json("Error : " + err.message);
+        res.status(404).json("Error : " + err.message)
     }
-});
-
+})
 module.exports = userRouter;
