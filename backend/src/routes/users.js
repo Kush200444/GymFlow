@@ -4,6 +4,7 @@ const User = require("../models/user");
 const {userAuth} = require("../middlewares/userAuth");
 const {authorizeRoles} = require("../middlewares/authorizeRoles");
 const {validateUserEditData} = require("../utils/validate");
+const { findByIdAndUpdate, findOne } = require("../models/gym");
 
 
 
@@ -81,7 +82,6 @@ userRouter.patch("/users/:userId", userAuth, authorizeRoles("owner"), async (req
       validateUserEditData(req);
       const userId = req.params.userId;
       const owner = req.user;
-      // use findOne to get a single user document, not an array
       const user = await User.findOne({
         $and:[{_id: userId},{gymId: owner.gymId}]
       });
@@ -99,6 +99,22 @@ userRouter.patch("/users/:userId", userAuth, authorizeRoles("owner"), async (req
       return res.status(400).json({message: err.message});
     }
 });
+userRouter.patch("/users/:userId/status",userAuth,authorizeRoles("owner"), async (req,res) => {
+    try{
+      const userId = req.params.userId;
+      const status = req.body;
+      const owner = req.user; 
+      const user = await findOne({gymId:owner.gmyId},{_id:userId});
+      await user.save();
+      res.status(200).json({
+        message:"User Updated Successfully"
+    })
+    }catch(err){
+        res.status(400).json({
+            message:err.message
+        })
+    }
+})
 
 userRouter.get("/users",userAuth,authorizeRoles("owner"), async (req,res) => {
     try{
