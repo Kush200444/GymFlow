@@ -1,4 +1,3 @@
-const {userAuth} = require("./userAuth");
 const authorizeRoles = (...allowedRoles) => {
     return (req,res,next) => {
      try{
@@ -6,7 +5,7 @@ const authorizeRoles = (...allowedRoles) => {
         return res.status(401).json({
             message:"User Unauthorized"
         });
-      } 
+      }
       if(!allowedRoles.includes(req.user.role)){
         return res.status(401).json({
             message:"Invalid Access"
@@ -20,5 +19,4 @@ const authorizeRoles = (...allowedRoles) => {
      }
     }
 }
-
 module.exports = {authorizeRoles,}

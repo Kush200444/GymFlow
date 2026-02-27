@@ -4,7 +4,6 @@ const User = require("../models/user");
 const {userAuth} = require("../middlewares/userAuth");
 const {authorizeRoles} = require("../middlewares/authorizeRoles");
 const {validateUserEditData} = require("../utils/validate");
-const { findByIdAndUpdate, findOne } = require("../models/gym");
 
 
 
@@ -17,7 +16,7 @@ userRouter.post("/users/trainers",userAuth,authorizeRoles("owner"),async (req,re
         lastName:lastName,
         email:emailId,
         password,
-        role:"trainer",
+        role:"trainer", 
         gymId:owner.gymId           
     }) 
     res.status(200).json({

@@ -15,7 +15,7 @@ authRouter.post("/auth/signup-owner", async (req,res) => {
        const {gymName,gymEmail,gymPhoneNumber,gymAddress,firstName,lastName,email,password,isActive} =req.body;
        validateGymData(req);
        const gym = new Gym({
-         gymName,
+         gymName, 
          gymEmail,
          gymPhoneNumber,
          gymAddress
@@ -56,12 +56,7 @@ authRouter.post("/auth/login", async (req,res) =>{
         throw new Error("Invalid Credentials")
        }
        const token = await user.getJWT();
-       res.cookie("token", token, {
-         httpOnly: true,
-         path: "/",
-         maxAge: 8 * 3600000 // 8 hours
-       });
-       console.log('login token set:', token);
+       res.cookie("token",token);
        res.status(200).json({
         message: "User logged In successfully"
        });
